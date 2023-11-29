@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 class News extends Model
 {
     protected $fillable = [
-        'title', 'content', 'textbox', 'links',
+        'category','title', 'content', 'textbox', 'links','link'
     ];
 
     // rest of your model code...

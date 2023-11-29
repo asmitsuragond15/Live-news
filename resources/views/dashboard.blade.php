@@ -1,72 +1,71 @@
+<!-- resources/views/dashboard.blade.php -->
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>News Dashboard</title>
     <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
 </head>
-
 <body>
-    <div class="form-container">
-        <h1>News Dashboard</h1>
 
-        @if(session('success'))
-        <div class="success-message">{{ session('success') }}</div>
-        @endif
+<div class="form-container">
+    <h1>News Dashboard</h1>
 
-        <form id="newsForm" action="{{ route('news.store') }}" method="post">
-            @csrf
-            <label for="title">Title:</label>
-            <input type="text" name="title" required>
+    <a href="{{ route('news.create') }}" class="add-news-button">Create News</a>
 
-            <label for="content">News Content:</label>
-            <textarea name="content" required></textarea>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search...">
+    </div>
 
-            <label for="textbox">Simple Text Box:</label>
-            <input type="text" name="textbox" required>
+    <table class="news-table">
+        <thead>
+            <tr>
+                <th>Sr. No</th>
+                <th>Title</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($news as $key => $item)
+                <tr>
+                    <td>{{ $key + 1 }}</td>
+                    <td>{{ $item->title }}</td>
+                    <td>
+                    <div class="action">
+                        <a href="{{ route('news.edit', $item) }}" class="edit-button" >Edit</a>
+                        <form action="{{ route('news.destroy', $item) }}" method="post">
+                            @csrf
+                            @method('delete')
+                            <button type="submit" class="delete-button"  >Delete</button>
+                        </form>
+</div>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
 
-            <label for="links">Related Links:</label>
-            <div id="links-container">
-                <input type="url" name="links[]" placeholder="Link 1" required>
-            </div>
-            <button type="button" onclick="addLink()">Add New Link</button>
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const newsTable = document.querySelector('.news-table');
 
-            <div class="buttons-container">
-                <button type="button" onclick="validateForm()">Post News</button>
-            </div>
+    searchInput.addEventListener('input', function () {
+        const searchTerm = searchInput.value.toLowerCase();
 
-            <script>
-            function addLink() {
-                const linksContainer = document.getElementById('links-container');
-                const linkInput = document.createElement('input');
-                linkInput.type = 'url';
-                linkInput.name = 'links[]';
-                linkInput.placeholder = 'Link';
-                linksContainer.appendChild(linkInput);
+        Array.from(newsTable.querySelectorAll('tbody tr')).forEach(row => {
+            const title = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+
+            if (title.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
             }
+        });
+    });
+</script>
 
-            function validateForm() {
-                const form = document.getElementById('newsForm');
-                const inputs = form.querySelectorAll('input, textarea');
-
-                let isValid = true;
-
-                inputs.forEach(input => {
-                    if (input.hasAttribute('required') && input.value.trim() === '') {
-                        isValid = false;
-                        input.classList.add('error');
-                    } else {
-                        input.classList.remove('error');
-                    }
-                });
-
-                if (isValid) {
-                    form.submit();
-                }
-            }
-            </script>
 </body>
-
 </html>

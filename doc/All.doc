@@ -1,0 +1,327 @@
+NewsController.php
+
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\News; // if you created a model
+
+
+class NewsController extends Controller
+{
+    public function index()
+    {
+        return view('dashboard');
+    }
+
+    public function store(Request $request)
+    {
+        // Validation
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'textbox' => 'nullable|string',
+            'links.*' => 'nullable|url',
+        ]);
+
+        News::create([
+            'title' => $request->input('title'),
+            'content' => $request->input('content'),
+            'textbox' => $request->input('textbox'),
+            'links' => json_encode($request->input('links')),
+        ]);
+        
+
+        return redirect('/dashboard')->with('success', 'News posted successfully!');
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+/* public/css/styles.css */
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.form-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 30px; /* Increase padding for a larger form */
+    width: 450px; /* Increase width for a larger form */
+    transition: box-shadow 0.3s ease;
+}
+
+.form-container:hover {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.form-container h1 {
+    color: #333;
+}
+
+.form-container label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.form-container input,
+.form-container textarea {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.form-container input:focus,
+.form-container textarea:focus {
+    border-color: #4caf50;
+}
+
+.form-container input.error,
+.form-container textarea.error {
+    border-color: #ff5252;
+}
+
+#links-container {
+    margin-bottom: 16px;
+}
+
+#links-container input {
+    /* Keep the styling consistent with other input fields */
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+#links-container input:focus {
+    border-color: #4caf50;
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+}
+
+.buttons-container button {
+    width: 48%; /* Adjust the width based on your preference */
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.buttons-container button:hover {
+    background-color: #45a049;
+}
+
+@media only screen and (max-width: 600px) {
+    .form-container {
+        width: 90%;
+        margin: 0 auto;
+        max-width: 400px; /* Set a maximum width for small screens */
+    }
+
+    #links-container input {
+        width: calc(100% - 20px);
+        margin-right: 0;
+    }
+
+    .buttons-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .buttons-container button {
+        width: 100%;
+        margin-top: 8px;
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+dashboard.blade.php
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Dashboard</title>
+    <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+</head>
+
+<body>
+    <div class="form-container">
+        <h1>News Dashboard</h1>
+
+        @if(session('success'))
+        <div class="success-message">{{ session('success') }}</div>
+        @endif
+
+        <form id="newsForm" action="{{ route('news.store') }}" method="post">
+            @csrf
+            <label for="title">Title:</label>
+            <input type="text" name="title" required>
+
+            <label for="content">News Content:</label>
+            <textarea name="content" required></textarea>
+
+            <label for="textbox">Simple Text Box:</label>
+            <input type="text" name="textbox" required>
+
+            <label for="links">Related Links:</label>
+            <div id="links-container">
+                <input type="url" name="links[]" placeholder="Link 1" required>
+            </div>
+            <button type="button" onclick="addLink()">Add New Link</button>
+
+            <div class="buttons-container">
+                <button type="button" onclick="validateForm()">Post News</button>
+            </div>
+
+            <script>
+            function addLink() {
+                const linksContainer = document.getElementById('links-container');
+                const linkInput = document.createElement('input');
+                linkInput.type = 'url';
+                linkInput.name = 'links[]';
+                linkInput.placeholder = 'Link';
+                linksContainer.appendChild(linkInput);
+            }
+
+            function validateForm() {
+                const form = document.getElementById('newsForm');
+                const inputs = form.querySelectorAll('input, textarea');
+
+                let isValid = true;
+
+                inputs.forEach(input => {
+                    if (input.hasAttribute('required') && input.value.trim() === '') {
+                        isValid = false;
+                        input.classList.add('error');
+                    } else {
+                        input.classList.remove('error');
+                    }
+                });
+
+                if (isValid) {
+                    form.submit();
+                }
+            }
+            </script>
+</body>
+
+</html>
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+News.php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class News extends Model
+{
+    protected $fillable = [
+        'title', 'content', 'textbox', 'links',
+    ];
+
+    // rest of your model code...
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+web.php
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
+use App\Http\Controllers\NewsController;
+
+Route::get('/dashboard', [NewsController::class, 'index']);
+Route::post('/dashboard', [NewsController::class, 'store'])->name('news.store');
+
+////////////////////////////////////////////
+
+C:\xampp\htdocs\news-app\database\migrations\2023_10_18_072847_create_news_table.php
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateNewsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('news', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->text('content');
+            $table->string('textbox');
+            $table->json('links')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('news');
+    }
+}
+/////////////////////////////////////////////////////

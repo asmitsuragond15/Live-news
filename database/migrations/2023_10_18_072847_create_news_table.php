@@ -11,18 +11,24 @@ class CreateNewsTable extends Migration
      *
      * @return void
      */
-    public function up()
-    {
-        Schema::create('news', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->text('content');
-            $table->string('textbox');
-            $table->json('links')->nullable();
-            $table->timestamps();
-        });
-    }
+// ...
+public function up()
+{
+    Schema::create('news', function (Blueprint $table) {
+        $table->id();
+        $table->string('title');
+        $table->text('content');
+        $table->string('textbox');
+        $table->string('category'); 
+        $table->json('links')->nullable();
+        $table->json('link')->nullable();
+        $table->timestamps();
+    });
+}
 
+// ...
+
+    
     /**
      * Reverse the migrations.
      *
