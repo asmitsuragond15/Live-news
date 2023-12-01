@@ -21,7 +21,7 @@ public function up()
         $table->string('textbox');
         $table->string('category'); 
         $table->json('links')->nullable();
-        $table->json('link')->nullable();
+        $table->json('more_links')->nullable();
         $table->timestamps();
     });
 }

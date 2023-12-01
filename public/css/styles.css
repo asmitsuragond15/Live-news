@@ -79,8 +79,8 @@ body {
     border-color: #4caf50;
 }
 
-.addlink {
-    width: 100%;
+.addlink,.addmorelink {
+    width: 95%;
     background-color: #4caf50;
     color: #fff;
     border: none;
@@ -93,7 +93,7 @@ body {
     margin-bottom: 16px;
 }
 
-.addlink:hover {
+.addlink:hover ,.addmorelink:hover {
     background-color: #45a049;
 }
 
@@ -153,6 +153,7 @@ body {
 .submit-button,
 .addlink,
 .category,
+.addmorelink,
 .view {
     background-color: #4caf50;
     color: #fff;
@@ -170,7 +171,7 @@ body {
     background-color: #ff5252;
 }
 
-.addlink:hover {
+.addlink:hover ,.addmorelink:hover{
     background-color: #ff5252;
 }
 
@@ -209,4 +210,29 @@ body {
         width: 100%;
         margin-bottom: 8px;
     }
+}
+
+#links-container input,
+#more-links-container input {
+ 
+}
+
+.addlink,
+.addmorelink {
+    
+   
+}
+.link
+{
+display: flex;
+}
+.related
+{
+    
+    width: 45%;
+}
+.more
+{
+    margin-left: 85px;
+    width: 45%;
 }
